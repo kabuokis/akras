@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#d30b0b">
+    <title>Akropolis App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Telefono konteineris */
+        .phone-screen {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            background-color: #f5f5f5;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Ekranų valdymas */
+        .screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Produkto ekranų slinkimo stilius */
+        .product-view.active {
+            display: block;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        .product-view::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* =========================================
+           JŪSŲ PATEIKTAS AKROPOLIO RAŠTAS
+           ========================================= */
+        .akropolis-pattern-bg {
+            background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22256%22%20height%3D%22512%22%20viewBox%3D%220%200%20256%20512%22%3E%3Cdefs%3E%3Cg%20id%3D%22m%22%3E%3Cg%20transform%3D%22rotate%28-59%29%20scale%280.181%29%20translate%28-542.5%20-510%29%22%3E%3Ccircle%20cx%3D%22321%22%20cy%3D%22245%22%20r%3D%2298%22%2F%3E%3Ccircle%20cx%3D%22765%22%20cy%3D%22245%22%20r%3D%2298%22%2F%3E%3Cpath%20d%3D%22M222%20457H397V510A145.5%20145.5%200%200%200%20688%20510V457H863V510A320.5%20320.5%200%200%201%20222%20510Z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fdefs%3E%3Crect%20width%3D%22256%22%20height%3D%22512%22%20fill%3D%22%23FA8300%22%2F%3E%3Cg%20fill%3D%22%23FA9B00%22%3E%3Cuse%20href%3D%22%23m%22%20xlink%3Ahref%3D%22%23m%22%20x%3D%22128%22%20y%3D%22256%22%2F%3E%3Cuse%20href%3D%22%23m%22%20xlink%3Ahref%3D%22%23m%22%20x%3D%22249%22%20y%3D%221%22%2F%3E%3Cuse%20href%3D%22%23m%22%20xlink%3Ahref%3D%22%23m%22%20x%3D%22-7%22%20y%3D%221%22%2F%3E%3Cuse%20href%3D%22%23m%22%20xlink%3Ahref%3D%22%23m%22%20x%3D%22249%22%20y%3D%22513%22%2F%3E%3Cuse%20href%3D%22%23m%22%20xlink%3Ahref%3D%22%23m%22%20x%3D%22-7%22%20y%3D%22513%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+            background-repeat: repeat;
+            background-color: #FA8300;
+            background-size: 64px 128px;
+            background-position: center;
+        }
+
+        .product-hero.akropolis-pattern-bg {
+            background-size: 128px 256px;
+        }
+
+        .featured-image-area.akropolis-pattern-bg {
+            background-size: 90px 180px;
+        }
+
+        .card-image.akropolis-pattern-bg,
+        .reward-card-img.akropolis-pattern-bg,
+        .list-item-img-box.akropolis-pattern-bg {
+            background-size: 40px 80px;
+        }
+
+
+        /* =========================================
+           PAGRINDINIO EKRANO STILIUS (HOME)
+           ========================================= */
+        .home-header {
+            background-color: #d30b0b;
+            padding: 40px 20px 45px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            color: white;
+        }
+
+        .user-info .greeting {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .user-info .points {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .logo {
+            display: inline-flex;
+            flex-direction: column;
+            margin-top: 2px;
+        }
+
+        .logo-main {
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
+            margin-bottom: 1px;
+            width: max-content;
+        }
+
+        .logo-sub {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            width: 100%;
+            line-height: 1;
+        }
+
+        .home-content {
+            background-color: white;
+            border-radius: 24px 24px 0 0;
+            margin-top: -24px;
+            flex: 1;
+            padding: 24px 20px;
+            overflow-y: auto;
+            padding-bottom: 120px;
+        }
+
+        .location-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .location-bar .location {
+            color: #d30b0b;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .location-bar .location i {
+            font-size: 14px;
+            margin-top: 1px;
+        }
+
+        .search-icon {
+            color: #d30b0b;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .promo-text-top {
+            color: #7a7a7a;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .featured-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border: 1px solid #eee;
+        }
+
+        .featured-image-area {
+            height: 190px;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .featured-text-box {
+            background-color: #e51b24;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            transform: rotate(-3deg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            z-index: 2;
+            align-self: center;
+            margin-top: 10px;
+        }
+
+        .featured-text-box h3 {
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .featured-text-box p {
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .featured-objects {
+            position: relative;
+            width: 55%;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            justify-content: center;
+        }
+
+        .obj {
+            position: absolute;
+            font-size: 36px;
+            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2));
+        }
+        .obj-bowling { top: -5px; right: 15px; z-index: 3; font-size: 45px; }
+        .obj-dumbbell { top: 30px; left: 0px; transform: rotate(45deg); font-size: 32px; }
+        .obj-ticket { top: 65px; right: -5px; background: #e51b24; color: white; font-size: 8px; padding: 5px 10px; border-radius: 3px; transform: rotate(15deg); font-weight: bold; z-index: 3; border: 1px solid #ffcccc; }
+        .obj-skates { bottom: 15px; right: 35px; font-size: 45px; z-index: 2; }
+        .obj-popcorn { bottom: -10px; left: 15px; font-size: 45px; z-index: 1; }
+
+        .featured-text-bottom {
+            padding: 16px;
+            background: white;
+        }
+
+        .featured-text-bottom h4 {
+            color: #222;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .featured-text-bottom p {
+            color: #7a7a7a;
+            font-size: 13px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            color: #7a7a7a;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .section-header .arrows {
+            color: #d30b0b;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: -2px;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-card {
+            flex: 0 0 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-image {
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket-graphic {
+            width: 110px;
+            height: 50px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            font-weight: 900;
+            font-size: 11px;
+            line-height: 1.1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .ticket-red { background-color: #e51b24; border: 1px dashed #ff9999; }
+        .ticket-yellow { background-color: #f6a623; color: #8b4513; border: 1px dashed #ffe0b2; }
+        .ticket-graphic span.small { font-size: 6px; font-weight: normal; margin-top: 2px; }
+
+        .card-title-bottom {
+            padding: 12px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* =========================================
+           REWARDS EKRANO STILIUS
+           ========================================= */
+        .rewards-header {
+            background-color: #d30b0b;
+            padding: 40px 20px 20px 20px;
+            color: white;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rewards-header h2 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .rewards-header .search-icon {
+            position: absolute;
+            right: 20px;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .rewards-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            padding-bottom: 120px;
+            background-color: #f8f8f8;
+        }
+
+        .rewards-section {
+            margin-bottom: 24px;
+        }
+
+        .reward-card {
+            flex: 0 0 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+        }
+
+        .reward-card-img {
+            height: 110px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .brand-logo {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            color: white;
+            font-weight: 900;
+            font-size: 12px;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .reward-icon-large {
+            font-size: 40px;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2));
+        }
+
+        .reward-info {
+            padding: 12px;
+        }
+
+        .reward-info h4 {
+            color: #222;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            height: 36px;
+            overflow: hidden;
+        }
+
+        .reward-info p {
+            color: #7a7a7a;
+            font-size: 13px;
+        }
+
+        /* =========================================
+           PAIEŠKOS (SEARCH) EKRANO STILIUS
+           ========================================= */
+        .search-header {
+            background-color: #f00b0b;
+            padding: 40px 20px 15px 15px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .search-header .back-btn {
+            font-size: 22px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-header input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            width: 100%;
+            outline: none;
+            font-weight: 400;
+            padding-right: 30px;
+        }
+
+        .search-header input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 0;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-content {
+            flex: 1;
+            background-color: white;
+            overflow-y: auto;
+        }
+
+        .search-default-text {
+            padding: 24px 20px;
+            color: #7a7a7a;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .results-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .results-title {
+            color: #7a7a7a;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .list-item {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            height: 100px;
+            align-items: stretch;
+            cursor: pointer;
+        }
+
+        .list-item-img-box {
+            width: 110px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .list-item-emoji {
+            font-size: 36px;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2));
+        }
+
+        .list-item-logo {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            color: white;
+            font-weight: 900;
+            font-size: 12px;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .list-item-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 18px;
+            color: #222;
+            font-weight: 500;
+        }
+
+        /* =========================================
+           PRODUKTO DETALIŲ EKRANAS (BENDRI)
+           ========================================= */
+        .product-hero {
+            height: 380px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-circle {
+            position: absolute;
+            top: 30px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .close-circle i {
+            color: #d30b0b;
+            font-size: 24px;
+        }
+
+        .kfc-logo-hero {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .product-details {
+            background-color: white;
+            padding: 24px 20px 80px 20px;
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .points-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .coin-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #fcd346;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 900;
+            font-size: 12px;
+        }
+
+        .points-value {
+            font-size: 20px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        .expiry-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #7a7a7a;
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .expiry-info i {
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .product-desc {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .product-warning {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .product-warning .exclamation {
+            color: #e51b24;
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        /* =========================================
+           MYGTUKŲ STILIAI (ATNAUJINTI)
+           ========================================= */
+        .redeem-btn-active, .redeem-btn-disabled {
+            width: 100%;
+            height: 55px; /* Juostos aukštis */
+            background-color: #e8ecef;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 24px;
+            margin-top: 10px;
+        }
+
+        .redeem-btn-active {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .redeem-btn-active.dragging .btn-circle-red {
+            transition: none;
+        }
+
+        /* Pasiekus galą apskritimas išsiplečia per visą juostą */
+        .redeem-btn-active.redeemed .btn-circle-red {
+            width: 100%;
+            height: 55px;
+            border-radius: 30px;
+            cursor: default;
+            transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+                        width 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+                        height 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .redeem-btn-active.redeemed .btn-circle-red i {
+            display: none;
+        }
+
+        .redeem-btn-active.redeemed .btn-text {
+            z-index: 3;
+            color: black;
+            font-weight: 700;
+        }
+
+
+
+        /* Apskritimas dabar 65px (vos didesnis už 55px juostą) */
+        .btn-circle-red {
+            width: 65px;
+            height: 65px;
+            background-color: #fe0000; /* Tiksli spalva */
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(var(--x, 0px), -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2), background-color 0.3s;
+        }
+
+        .redeem-btn-active.dragging .btn-circle-red {
+            cursor: grabbing;
+        }
+
+        .btn-circle-red i {
+            color: #ea0907;
+            font-size: 22px;
+            margin-top: 2px;
+        }
+
+        .btn-circle-grey {
+            width: 65px;
+            height: 65px;
+            background-color: #8492a6;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .btn-text {
+            width: 100%;
+            text-align: center;
+            color: #8492a6;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 1;
+            position: relative;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           O'LEARYS EKRANAS
+           ========================================= */
+        .olearys-logo-hero {
+            position: absolute;
+            bottom: 25px;
+            right: 20px;
+            color: white;
+            font-family: 'Brush Script MT', 'Cursive', sans-serif;
+            font-size: 34px;
+            font-style: italic;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .olearys-img {
+            width: 320px;
+            max-width: 90%;
+            height: auto;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.25));
+            position: relative;
+            top: -10px;
+            object-fit: contain;
+        }
+
+        .olearys-disclaimer {
+            color: #e51b24;
+            font-size: 15px;
+            font-style: italic;
+            line-height: 1.4;
+            margin-top: 5px;
+        }
+
+        /* =========================================
+           LATTE KAVA
+           ========================================= */
+        .latte-glass {
+            width: 90px;
+            height: 140px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px 10px 30px 30px;
+            border: 2px solid rgba(255,255,255,0.6);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        .latte-layer { width: 100%; position: absolute; left: 0; }
+        .latte-milk { height: 35%; bottom: 0; background: #fcfcfc; }
+        .latte-coffee { height: 35%; bottom: 35%; background: #4a2c14; }
+        .latte-foam { height: 30%; bottom: 70%; background: #ffffff; border-radius: 0 0 15px 15px; }
+        .latte-foam::after {
+            content: ''; position: absolute; top: -5px; left: 15px;
+            width: 60px; height: 15px; background: white; border-radius: 50%;
+        }
+
+        /* =========================================
+           FASHION ZONE
+           ========================================= */
+        .fz-header-text {
+            font-family: 'Arial Black', Impact, sans-serif;
+            color: white;
+            font-size: 45px;
+            line-height: 1;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 #d30b0b, -2px -2px 0 #d30b0b, 2px -2px 0 #d30b0b, -2px 2px 0 #d30b0b;
+            transform: skewX(-10deg);
+            letter-spacing: 2px;
+        }
+
+        .fz-header-sub {
+            font-family: sans-serif;
+            color: white;
+            font-size: 18px;
+            letter-spacing: 8px;
+            text-align: center;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .fz-disclaimer {
+            color: #e51b24;
+            font-size: 15px;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+        /* =========================================
+           BENDRAS APATINIS MENIU IR FAB
+           ========================================= */
+        .fab {
+            position: absolute;
+            bottom: 42px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 68px;
+            height: 68px;
+            background-color: #df0000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 10;
+            transition: opacity 0.2s;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 76px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            z-index: 5;
+            padding: 0 10px;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8288a0;
+            font-size: 13px;
+            font-weight: 500;
+            gap: 4px;
+            width: 70px;
+            cursor: pointer;
+        }
+
+        .nav-item svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+        }
+
+        .nav-item.active {
+            color: #aa1114;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .home-content::-webkit-scrollbar,
+        .rewards-content::-webkit-scrollbar,
+        .search-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* =========================================
+           "ARE YOU IN THE SHOP?" PATVIRTINIMO DIALOGAS
+           ========================================= */
+        .confirm-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 29px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.25s ease;
+        }
+
+        /* Uždarant po Confirm – dingsta iškart, be animacijos */
+        .confirm-overlay.instant {
+            transition: none;
+        }
+
+        .confirm-dialog {
+            width: 100%;
+            background: #fff;
+            border-radius: 4px;
+            padding: 24px 24px 12px 24px;
+            box-shadow: 0 11px 15px rgba(0,0,0,0.2), 0 24px 38px rgba(0,0,0,0.14);
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        .confirm-overlay.show .confirm-dialog {
+            transform: scale(1);
+        }
+
+        .confirm-dialog h2 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #1c1c1c;
+            margin-bottom: 14px;
+        }
+
+        .confirm-dialog p {
+            font-size: 17px;
+            line-height: 1.35;
+            color: #3c3c3c;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 22px;
+        }
+
+        .confirm-actions button {
+            background: none;
+            border: none;
+            color: #00897b;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .confirm-actions button:active {
+            background: rgba(0, 137, 123, 0.12);
+        }
+
+        /* =========================================
+           IKONOS (inline SVG per CSS mask – nereikia išorinių šriftų)
+           ========================================= */
+        i.ico {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            flex-shrink: 0;
+            font-style: normal;
+            background-color: currentColor;
+            -webkit-mask: var(--ico) center / contain no-repeat;
+            mask: var(--ico) center / contain no-repeat;
+        }
+        i.ico-magnifying-glass { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E"); }
+        i.ico-arrow-left { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E"); }
+        i.ico-arrow-right { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M13 6l6 6-6 6'/%3E%3C/svg%3E"); }
+        i.ico-arrow-right-long { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12h19M16 6l6 6-6 6'/%3E%3C/svg%3E"); }
+        i.ico-xmark { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E"); }
+        i.ico-clock { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5.5l3.5 2'/%3E%3C/svg%3E"); }
+
+        /* =========================================
+           VOUCHER EKRANAS (rodomas paspaudus CONFIRM) – be animacijų
+           ========================================= */
+        .voucher-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #fff;
+            visibility: hidden;
+            transform: translateX(100%);
+            transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.25, 1), visibility 0s linear 0.45s;
+        }
+
+        .voucher-overlay.show {
+            visibility: visible;
+            transform: translateX(0);
+            transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.25, 1), visibility 0s;
+        }
+
+        /* Fonas: ta pati nuotrauka, stipriai padidinta, išblukinta ir pabalinta */
+        .voucher-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .voucher-bg-inner {
+            position: absolute;
+            inset: 0;
+            transform: scale(2.7);
+        }
+
+        .voucher-bg .product-hero {
+            height: 100%;
+        }
+
+        .voucher-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.38);
+        }
+
+        .voucher-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            min-height: 0;
+        }
+
+        .voucher-card {
+            position: relative;
+            width: 100%;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12));
+        }
+
+        .voucher-hero {
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            /* tikros skylės apatiniuose kampuose */
+            -webkit-mask: radial-gradient(circle 17px at 0 100%, #0000 16.5px, #000 17px),
+                          radial-gradient(circle 17px at 100% 100%, #0000 16.5px, #000 17px);
+            -webkit-mask-composite: source-in;
+            mask: radial-gradient(circle 17px at 0 100%, #0000 16.5px, #000 17px),
+                  radial-gradient(circle 17px at 100% 100%, #0000 16.5px, #000 17px);
+            mask-composite: intersect;
+        }
+
+        .voucher-hero .product-hero {
+            height: auto;
+            aspect-ratio: 1 / 1;
+        }
+
+        .voucher-title {
+            position: relative;
+            background: #fff;
+            padding: 30px 22px 26px 22px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #2b2b33;
+            /* tikros skylės viršutiniuose kampuose (bilieto išpjovos) */
+            -webkit-mask: radial-gradient(circle 17px at 0 0, #0000 16.5px, #000 17px),
+                          radial-gradient(circle 17px at 100% 0, #0000 16.5px, #000 17px);
+            -webkit-mask-composite: source-in;
+            mask: radial-gradient(circle 17px at 0 0, #0000 16.5px, #000 17px),
+                  radial-gradient(circle 17px at 100% 0, #0000 16.5px, #000 17px);
+            mask-composite: intersect;
+        }
+
+        /* Statinis blyksnis centre; judinamas tik telefono posūkio (--shine: 0% kairė … 100% dešinė) */
+        .voucher-status {
+            --shine: 50%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 0 12px 12px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            background: linear-gradient(90deg,
+                #ff0000 calc(var(--shine) - 32%),
+                #ff7d7d var(--shine),
+                #ff0000 calc(var(--shine) + 32%));
+        }
+
+        /* =========================================
+           LOADING (po CONFIRM, prieš voucher)
+           ========================================= */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1050;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-box {
+            width: 82px;
+            height: 82px;
+            background: #fff;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid #d30b0b;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .location-icons {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .fs-btn {
+            color: #d30b0b;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        i.ico-expand { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'/%3E%3C/svg%3E"); }
+
+        .voucher-done {
+            position: relative;
+            z-index: 1;
+            margin: 0 14px 28px 14px;
+            height: 50px;
+            border: none;
+            border-radius: 30px;
+            background: #fff;
+            color: #e51b24;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+        }
+
+        .voucher-done:active {
+            transform: scale(0.98);
+        }
+    .photo-fill{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+
+        /* Produktai iš akropolis-data.js: išdėstymas (admin puslapyje nustatomas) */
+        .lay{container-type:inline-size;overflow:hidden;}
+        .lph{position:absolute;transform:translate(-50%,-50%);object-fit:contain;}
+        .llogo{position:absolute;height:auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+        .ltxt{position:absolute;color:#fff;font:italic 800 6cqw/1 Georgia,'Brush Script MT',serif;text-shadow:1px 1px 3px rgba(0,0,0,.3);white-space:nowrap;}
+        /* Produktai iš akropolis-data.js (senas stilius) */
+        .dyn-photo{padding:8%;box-sizing:border-box;}
+        .dyn-hero .dyn-photo{padding:26%;}
+        .dyn-hero{overflow:hidden;}
+        .dyn-hero .dyn-photo{transform:none;}
+        .reward-card-img,.list-item-img-box{overflow:hidden;}
+        .reward-card-img .dyn-photo,.list-item-img-box .dyn-photo{padding:4%;}
+        .dyn-brand{position:absolute;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+        .dyn-brand.lg{right:10px;bottom:80px;max-width:91px;max-height:42px;}
+        .dyn-brand.sm{right:6px;bottom:6px;max-width:55px;max-height:24px;}
+        .dyn-brand.xs{right:4px;bottom:4px;max-width:30px;max-height:14px;}
+        .dyn-brandtxt{position:absolute;color:#fff;font-weight:900;font-style:italic;text-shadow:1px 1px 3px rgba(0,0,0,.3);}
+        .dyn-brandtxt.lg{right:10px;bottom:80px;font-size:21px;font-family:'Brush Script MT',cursive;}
+        .dyn-brandtxt.sm{right:8px;bottom:8px;font-size:15px;}
+        .dyn-brandtxt.xs{right:5px;bottom:5px;font-size:9px;}
+        .list-item-img-box.akropolis-pattern-bg{background-size:30px 60px;}
+        .list-item-img-box .dyn-photo{padding:16%;}
+</style>
+</head>
+<body>
+
+<div class="phone-screen">
+
+    <!-- HOME EKRANAS -->
+    <div id="home-screen" class="screen active">
+        <div class="home-header">
+            <div class="user-info">
+                <div class="greeting">Hi there</div>
+                <div class="points" id="user-points-display">500 points</div>
+            </div>
+            <div class="logo">
+                <div class="logo-main">AKROPOLIS</div>
+                <div class="logo-sub">
+                    <span>DAUGIAU</span>
+                    <span>DŽIAUGSMO</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-content">
+            <div class="location-bar">
+                <div class="location">
+                    AKROPOLIS Vilnius <i class="ico ico-arrow-right-long"></i>
+                </div>
+                <div class="location-icons">
+                    <i class="ico ico-expand fs-btn" id="fs-btn" onclick="goFullscreen()"></i>
+                    <i class="ico ico-magnifying-glass search-icon" onclick="openSearch()"></i>
+                </div>
+            </div>
+
+            <div class="promo-text-top">
+                Pramogos dabar kainuoja mažiau taškų!
+            </div>
+
+            <div class="featured-card">
+                <div class="featured-image-area akropolis-pattern-bg">
+                    <div class="featured-text-box">
+                        <h3>Pramogos –<br>už mažiau taškų!</h3>
+                        <p>AKROPOLIS<br>VILNIUS</p>
+                    </div>
+                    <div class="featured-objects">
+                        <div class="obj obj-dumbbell">🏋️</div>
+                        <div class="obj obj-bowling">🎳</div>
+                        <div class="obj obj-ticket">AKROPOLIO<br>LEDAS</div>
+                        <div class="obj obj-skates">⛸️</div>
+                        <div class="obj obj-popcorn">🍿</div>
+                    </div>
+                </div>
+                <div class="featured-text-bottom">
+                    <h4>Čiuožimas, kinas, boulingas ir daug...</h4>
+                    <p>Expires on November 8, 2026</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>Pramogos – už mažiau taškų!</h2>
+                <div class="arrows">>></div>
+            </div>
+
+            <div class="horizontal-scroll">
+                <div class="scroll-card">
+                    <div class="card-image akropolis-pattern-bg">
+                        <div class="ticket-graphic ticket-red">
+                            AKROPOLIO<br>LEDAS
+                            <span class="small">Čiuožimas</span>
+                        </div>
+                    </div>
+                    <div class="card-title-bottom">
+                        Antras bilietas<br>nemokamai
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REWARDS EKRANAS -->
+    <div id="rewards-screen" class="screen">
+        <div class="rewards-header">
+            <h2>Rewards</h2>
+            <i class="ico ico-magnifying-glass search-icon" onclick="openSearch()"></i>
+        </div>
+        <div class="rewards-content">
+            <div class="rewards-section">
+                <div class="section-header">
+                    <h2>Prizai</h2>
+                    <div class="arrows">>></div>
+                </div>
+                <div class="horizontal-scroll">
+                    <div class="reward-card" onclick="openOLearys()">
+                        <div class="reward-card-img akropolis-pattern-bg">
+                            <div class="reward-icon-large">☕🥐</div>
+                            <div class="brand-logo" style="font-family: 'Brush Script MT', cursive; font-size: 16px;">O'Learys</div>
+                        </div>
+                        <div class="reward-info">
+                            <h4>Perkant dienos pietus: kava + spur...</h4>
+                            <p>5 points</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAIEŠKOS EKRANAS -->
+    <div id="search-screen" class="screen">
+        <div class="search-header">
+            <i class="ico ico-arrow-left back-btn" onclick="closeSearch()"></i>
+            <div class="search-input-wrapper">
+                <input type="text" id="search-input" placeholder="Search here..." oninput="handleSearch()">
+                <i class="ico ico-xmark clear-btn" id="clear-btn" onclick="clearSearchText()"></i>
+            </div>
+        </div>
+
+        <div class="search-content">
+            <div class="search-default-text" id="default-search-text">
+                <p>Search for shops, posts, events and rewards throughout the app.</p>
+            </div>
+
+            <!-- O'Learys Rezultatai -->
+            <div class="results-container" id="olearys-results">
+                <div class="results-title">Rewards</div>
+                <div class="list-item" onclick="openOLearys()">
+                    <div class="list-item-img-box akropolis-pattern-bg">
+                        <div class="list-item-emoji">☕🥐</div>
+                        <div class="list-item-logo" style="font-family: 'Brush Script MT', cursive; font-size:14px; right: 8px;">O'Learys</div>
+                    </div>
+                    <div class="list-item-text">Perkant dienos pietus</div>
+                </div>
+            </div>
+
+            <!-- KFC Rezultatai -->
+            <div class="results-container" id="kfc-results">
+                <div class="results-title">Rewards</div>
+                <div class="list-item" onclick="openLatteProduct()">
+                    <div class="list-item-img-box akropolis-pattern-bg">
+                        <div class="list-item-emoji">🥤</div>
+                        <div class="list-item-logo">KFC</div>
+                    </div>
+                    <div class="list-item-text">Latte kava</div>
+                </div>
+                <div class="list-item" onclick="openLatteProduct()">
+                    <div class="list-item-img-box akropolis-pattern-bg">
+                        <div class="list-item-emoji">🍗</div>
+                        <div class="list-item-logo">KFC</div>
+                    </div>
+                    <div class="list-item-text">Pulkininko kibirelis</div>
+                </div>
+            </div>
+
+            <!-- FASHION ZONE Rezultatai -->
+            <div class="results-container" id="fashion-results">
+                <div class="results-title">Nuolaidos</div>
+                <div class="list-item" onclick="openFashionZone()">
+                    <div class="list-item-img-box akropolis-pattern-bg">
+                        <div class="list-item-emoji">👗</div>
+                        <div class="list-item-logo" style="font-size:10px;">FASHION</div>
+                    </div>
+                    <div class="list-item-text">-5 % visam asortimentui</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- O'LEARYS PRODUKTO EKRANAS -->
+    <div id="olearys-screen" class="screen product-view">
+        <div class="product-hero akropolis-pattern-bg">
+            <div class="close-circle" onclick="closeProduct('olearys-screen', 'rewards-screen')">
+                <i class="ico ico-xmark"></i>
+            </div>
+
+            <div class="reward-icon-large" style="font-size: 110px;">☕🍩</div>
+
+            <div class="olearys-logo-hero">O'Learys</div>
+        </div>
+
+        <div class="product-details">
+            <h1 class="product-title">Perkant dienos pietus: kava + spurgytės</h1>
+
+            <div class="points-info">
+                <div class="coin-icon">A</div>
+                <span class="points-value">5</span>
+            </div>
+
+            <div class="expiry-info">
+                <i class="ico ico-clock"></i>
+                <span>Expires December 31, 2026 9:00 PM</span>
+            </div>
+
+            <p class="product-desc">O'Learys dovanoja juodą kavą ir spurgytes tik valgantiems jų sporto bare dienos pietus 11.30–15.00 val.</p>
+
+            <p class="product-warning">
+                <span class="exclamation">!</span>
+                <span>Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO O'Learys darbuotojui.</span>
+            </p>
+
+            <div class="redeem-btn-active" id="olearys-btn" data-cost="5">
+                <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
+                <span class="btn-text">Redeem</span>
+            </div>
+
+            <p class="olearys-disclaimer">Tu patvirtini, kad nori šio prizo. Jį atsiimsi Vilniuje su O'LEARYS darbuotojo pagalba.</p>
+        </div>
+    </div>
+
+    <!-- LATTE KAVA PRODUKTO EKRANAS -->
+    <div id="latte-screen" class="screen product-view">
+        <div class="product-hero akropolis-pattern-bg">
+            <div class="close-circle" onclick="closeProduct('latte-screen', 'search-screen')">
+                <i class="ico ico-xmark"></i>
+            </div>
+
+            <div class="latte-glass">
+                <div class="latte-layer latte-milk"></div>
+                <div class="latte-layer latte-coffee"></div>
+                <div class="latte-layer latte-foam"></div>
+            </div>
+
+            <div class="kfc-logo-hero">KFC</div>
+        </div>
+
+        <div class="product-details">
+            <h1 class="product-title">Latte kava</h1>
+
+            <div class="points-info">
+                <div class="coin-icon">A</div>
+                <span class="points-value">125</span>
+            </div>
+
+            <div class="expiry-info">
+                <i class="ico ico-clock"></i>
+                <span>Expires December 31, 2026 9:00 PM | Max 1 per month per customer</span>
+            </div>
+
+            <p class="product-desc">Caffee latte 300 ml.</p>
+
+            <p class="product-warning">
+                <span class="exclamation">!</span>
+                <span>Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO KFC restorano darbuotojui.</span>
+            </p>
+
+            <div class="redeem-btn-active" id="latte-btn" data-cost="125">
+                <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
+                <span class="btn-text">Redeem</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FASHION ZONE PRODUKTO EKRANAS -->
+    <div id="fashion-screen" class="screen product-view">
+        <div class="product-hero akropolis-pattern-bg">
+            <div class="close-circle" onclick="closeProduct('fashion-screen', 'search-screen')">
+                <i class="ico ico-xmark"></i>
+            </div>
+
+            <div>
+                <div class="fz-header-sub">Fashion</div>
+                <div class="fz-header-text">ZONE</div>
+            </div>
+        </div>
+
+        <div class="product-details">
+            <h1 class="product-title">-5 % visam asortimentui</h1>
+
+            <div class="points-info">
+                <div class="coin-icon">A</div>
+                <span class="points-value">5</span>
+            </div>
+
+            <div class="expiry-info">
+                <i class="ico ico-clock"></i>
+                <span>Expires December 31, 2026 9:00 PM</span>
+            </div>
+
+            <p class="product-warning">
+                <span class="exclamation">!</span>
+                <span>Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO FASHION ZONE parduotuvės darbuotojui.</span>
+            </p>
+
+            <div class="redeem-btn-active" id="fashion-btn" data-cost="5">
+                <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
+                <span class="btn-text">Redeem</span>
+            </div>
+
+            <p class="fz-disclaimer">Tu patvirtini, kad nori šio prizo. Jį atsiimsi Vilniuje su FASHION ZONE darbuotojo pagalba.</p>
+        </div>
+    </div>
+
+
+    <!-- PATVIRTINIMO DIALOGAS (rodomas, kai slideris pasiekia Redeemed) -->
+    <div class="confirm-overlay" id="confirm-overlay">
+        <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+            <h2 id="confirm-title">Are you in the shop?</h2>
+            <p>Please confirm with someone from the staff present.</p>
+            <div class="confirm-actions">
+                <button type="button" id="confirm-cancel">Cancel</button>
+                <button type="button" id="confirm-ok">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING (po CONFIRM) -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-box"><div class="spinner"></div></div>
+    </div>
+
+    <!-- VOUCHER EKRANAS (po CONFIRM) -->
+    <div class="voucher-overlay" id="voucher-overlay">
+        <div class="voucher-bg"><div class="voucher-bg-inner" id="voucher-bg-inner"></div></div>
+        <div class="voucher-content">
+            <div class="voucher-card">
+                <div class="voucher-hero" id="voucher-hero"></div>
+                <div class="voucher-title" id="voucher-title"></div>
+                <div class="voucher-status">Redeemed</div>
+            </div>
+        </div>
+        <button type="button" class="voucher-done" id="voucher-done">I received my goods</button>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab" id="main-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="162 87 761 803" width="36" height="36">
+          <circle cx="321" cy="245" r="98" fill="#fff"/>
+          <circle cx="765" cy="245" r="98" fill="#fff"/>
+          <path fill="#fff" d="M222 457H397V510A145.5 145.5 0 0 0 688 510V457H863V510A320.5 320.5 0 0 1 222 510Z"/>
+        </svg>
+    </div>
+
+    <!-- APATINIS MENIU -->
+    <div class="bottom-nav" id="main-nav">
+        <div class="nav-item active" data-target="home-screen" onclick="switchTab(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <g transform="translate(24 24) scale(0.0551) translate(-584.5 -462.5)" fill="none" stroke="currentColor" stroke-width="60" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M287 702.5V435Q287 371 338.2 332.6L537.85 181.8Q584.25 147 630.65 181.8L830.3 332.6Q881.5 371 881.5 435V702.5Q881.5 763.5 820.5 763.5H348Q287 763.5 287 702.5Z"/>
+              </g>
+            </svg>
+            <span>Home</span>
+        </div>
+        <div class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <g transform="translate(24 24) scale(0.0461) translate(-592.5 -440.5)" fill="none" stroke="currentColor" stroke-width="72" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M318 420V285A80 80 0 0 1 398 205H867A80 80 0 0 1 947 285V722A80 80 0 0 1 867 802H613"/>
+                <path d="M474 285V160A81 81 0 0 1 555 79H709A81 81 0 0 1 790 160V285"/>
+                <path d="M238 560H480M238 681H480M238 802H480"/>
+              </g>
+            </svg>
+            <span>Shops</span>
+        </div>
+        <div class="nav-item" data-target="rewards-screen" onclick="switchTab(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <g transform="translate(24 24) scale(0.0551) translate(-615.5 -516.5)" fill="none" stroke="currentColor" stroke-width="62" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="319.5" y="402" width="592" height="164" rx="20"/>
+                <path d="M353 566V802.5A31 31 0 0 0 384 833.5H847A31 31 0 0 0 878 802.5V566"/>
+                <path d="M615.5 402V833.5"/>
+                <path d="M615.5 402C592 360 548 275 515 238C492 212 470 200 442 200C392 200 355 245 355 297C355 350 395 395 445 402"/>
+                <path d="M615.5 402C639 360 683 275 716 238C739 212 761 200 789 200C839 200 876 245 876 297C876 350 836 395 786 402"/>
+              </g>
+            </svg>
+            <span>Rewards</span>
+        </div>
+        <div class="nav-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <g transform="translate(24 24) scale(0.0551) translate(-576 -463.5)" fill="none" stroke="currentColor" stroke-width="62" stroke-linecap="round">
+                <path d="M339 340H813M339 463H813M339 587H813"/>
+              </g>
+            </svg>
+            <span>More</span>
+        </div>
+    </div>
+
+</div>
+
+<script src="akropolis-data.js"></script>
+<script>
+    let currentScreen = 'home-screen';
+    let userPoints = 500;
+
+    function switchTab(clickedItem) {
+        const targetId = clickedItem.getAttribute('data-target');
+        if (!targetId) return;
+
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        clickedItem.classList.add('active');
+
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+
+        currentScreen = targetId;
+    }
+
+    function openSearch() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById('search-screen').classList.add('active');
+        document.getElementById('main-nav').classList.add('hidden');
+        document.getElementById('main-fab').classList.add('hidden');
+
+        clearSearchText();
+    }
+
+    function closeSearch() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById(currentScreen).classList.add('active');
+        document.getElementById('main-nav').classList.remove('hidden');
+        document.getElementById('main-fab').classList.remove('hidden');
+    }
+
+    function openOLearys() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById('olearys-screen').classList.add('active');
+        document.getElementById('main-nav').classList.add('hidden');
+        document.getElementById('main-fab').classList.add('hidden');
+    }
+
+    function openLatteProduct() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById('latte-screen').classList.add('active');
+        document.getElementById('main-nav').classList.add('hidden');
+        document.getElementById('main-fab').classList.add('hidden');
+    }
+
+    function openFashionZone() {
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+        document.getElementById('fashion-screen').classList.add('active');
+        document.getElementById('main-nav').classList.add('hidden');
+        document.getElementById('main-fab').classList.add('hidden');
+    }
+
+    function closeProduct(productId, backToId) {
+        document.getElementById(productId).classList.remove('active');
+
+        if(backToId === 'search-screen') {
+            document.getElementById(backToId).classList.add('active');
+            document.getElementById('main-nav').classList.add('hidden');
+            document.getElementById('main-fab').classList.add('hidden');
+        } else {
+            document.getElementById(backToId).classList.add('active');
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('main-fab').classList.remove('hidden');
+        }
+    }
+
+    function initSlider(track) {
+        const knob = track.querySelector('.btn-circle-red');
+        const text = track.querySelector('.btn-text');
+        let startX = 0, x = 0, maxX = 0, dragging = false;
+
+        function setX(value) {
+            x = Math.max(0, Math.min(value, maxX));
+            track.style.setProperty('--x', x + 'px');
+            text.style.opacity = 1 - x / maxX;
+        }
+
+        knob.addEventListener('pointerdown', e => {
+            if (track.classList.contains('redeemed')) return;
+            dragging = true;
+            maxX = track.clientWidth - knob.offsetWidth;
+            startX = e.clientX - x;
+            track.classList.add('dragging');
+            knob.setPointerCapture(e.pointerId);
+        });
+
+        knob.addEventListener('pointermove', e => {
+            if (dragging) setX(e.clientX - startX);
+        });
+
+        function release() {
+            if (!dragging) return;
+            dragging = false;
+            track.classList.remove('dragging');
+
+            // Nutempus beveik iki galo - prizas atsiimamas, kitaip grįžta atgal
+            if (x >= maxX * 0.85) {
+                redeemReward(track);
+            } else {
+                setX(0);
+            }
+        }
+
+        knob.addEventListener('pointerup', release);
+        knob.addEventListener('pointercancel', release);
+
+        // Grąžina slankiklį į pradžią be animacijos, kad prizą būtų galima atsiimti dar kartą
+        track.resetSlider = () => {
+            track.classList.add('dragging');
+            track.classList.remove('redeemed');
+            text.textContent = 'Redeem';
+            setX(0);
+            requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('dragging')));
+        };
+    }
+
+    let pendingTrack = null;
+
+    function redeemReward(track) {
+        // Apskritimas grįžta į kairę ir kartu platėja, todėl dešinysis kraštas lieka vietoje
+        track.style.setProperty('--x', '0px');
+        track.classList.add('redeemed');
+
+        const text = track.querySelector('.btn-text');
+        text.textContent = 'Redeemed';
+        text.style.opacity = 1;
+
+        if (navigator.vibrate) navigator.vibrate(30);
+
+        // Kai animacija baigiasi (0.5s), parodome patvirtinimo langą
+        pendingTrack = track;
+        setTimeout(() => {
+            if (pendingTrack === track) {
+                document.getElementById('confirm-overlay').classList.add('show');
+            }
+        }, 550);
+    }
+
+    function closeConfirm() {
+        document.getElementById('confirm-overlay').classList.remove('show');
+    }
+
+    document.getElementById('confirm-ok').addEventListener('click', () => {
+        if (!pendingTrack) return;
+        // Taškai nuskaičiuojami tik po patvirtinimo
+        userPoints = Math.max(0, userPoints - Number(pendingTrack.dataset.cost));
+        document.getElementById('user-points-display').textContent = userPoints + ' points';
+        const confirmedTrack = pendingTrack;
+        pendingTrack = null;
+
+        // Dialogas dingsta iškart, be animacijos
+        const ov = document.getElementById('confirm-overlay');
+        ov.classList.add('instant');
+        ov.classList.remove('show');
+        setTimeout(() => ov.classList.remove('instant'), 50);
+
+        // iOS reikalauja leidimo jutikliams (turi būti kviečiama iš paspaudimo)
+        const askPermission = (typeof DeviceOrientationEvent !== 'undefined' &&
+                               typeof DeviceOrientationEvent.requestPermission === 'function')
+            ? DeviceOrientationEvent.requestPermission().catch(() => 'denied')
+            : Promise.resolve('granted');
+
+        // Kvadratas su loading animacija, po to voucher įslenka iš dešinės
+        const loading = document.getElementById('loading-overlay');
+        loading.classList.add('show');
+        const wait = new Promise(r => setTimeout(r, 1300));
+        Promise.all([askPermission, wait]).then(([res]) => {
+            loading.classList.remove('show');
+            showVoucher(confirmedTrack);
+            if (res === 'granted') startTilt();
+        });
+    });
+
+    // ----- Voucher ekranas -----
+    let voucherScreenId = null;
+    let voucherBackTo = 'rewards-screen';
+
+    function showVoucher(track) {
+        const screenEl = track.closest('.screen');
+        voucherScreenId = screenEl.id;
+
+        // kur grįžti uždarius (paimama iš to paties produkto X mygtuko)
+        const closeAttr = screenEl.querySelector('.close-circle').getAttribute('onclick') || '';
+        const m = closeAttr.match(/closeProduct\('[^']+',\s*'([^']+)'\)/);
+        voucherBackTo = m ? m[1] : 'rewards-screen';
+
+        // Hero kopijuojamas iš produkto ekrano (be X mygtuko) – kai įdėsite tikrą nuotrauką, ji atsiras automatiškai
+        const makeHero = () => {
+            const hero = screenEl.querySelector('.product-hero').cloneNode(true);
+            const x = hero.querySelector('.close-circle');
+            if (x) x.remove();
+            return hero;
+        };
+
+        const heroBox = document.getElementById('voucher-hero');
+        const bgBox = document.getElementById('voucher-bg-inner');
+        heroBox.innerHTML = '';
+        bgBox.innerHTML = '';
+        heroBox.appendChild(makeHero());
+        bgBox.appendChild(makeHero());
+
+        document.getElementById('voucher-title').textContent =
+            screenEl.querySelector('.product-title').textContent;
+
+        // Blyksnis pradeda centre
+        document.querySelector('.voucher-status').style.setProperty('--shine', '50%');
+        shineNow = shineTarget = 0.5;
+
+        document.getElementById('voucher-overlay').classList.add('show');
+        resetTiltBaseline();
+    }
+
+    // ----- Blyksnio judėjimas pagal telefono posūkį -----
+    // Sukant telefoną į kairę blyksnis juda kairėn, į dešinę – dešinėn.
+    // Aukštyn/žemyn (pitch) nieko nekeičia. Jei jutiklių nėra – blyksnis lieka centre.
+    const TILT_RANGE = 20;   // laipsniai, kurių pakanka nueiti per visą juostą
+    let tiltBase = null, shineNow = 0.5, shineTarget = 0.5, tiltRaf = null;
+
+    function resetTiltBaseline() { tiltBase = null; }
+
+    function wrap180(d) { while (d > 180) d -= 360; while (d < -180) d += 360; return d; }
+
+    function onTilt(e) {
+        if (e.beta == null || e.gamma == null) return;   // nėra jutiklių -> lieka centre
+        const r = Math.PI / 180;
+        const a = (e.alpha || 0) * r, b = e.beta * r, g = e.gamma * r;
+
+        // horizontali kryptis, į kurią žiūri ekranas
+        const x = Math.cos(a) * Math.sin(g) + Math.sin(a) * Math.sin(b) * Math.cos(g);
+        const y = Math.sin(a) * Math.sin(g) - Math.cos(a) * Math.sin(b) * Math.cos(g);
+        const heading = Math.atan2(x, y) / r;
+        const upright = Math.hypot(x, y) > 0.35;   // jei telefonas beveik guli – naudojame gamma
+
+        if (!tiltBase) tiltBase = { heading, gamma: e.gamma };
+
+        // teigiama = pasukta į dešinę, neigiama = į kairę
+        const turn = upright ? wrap180(heading - tiltBase.heading) : (e.gamma - tiltBase.gamma);
+        shineTarget = Math.max(-0.25, Math.min(1.25, 0.5 + turn / (2 * TILT_RANGE)));
+
+        if (!tiltRaf) tiltRaf = requestAnimationFrame(tiltLoop);
+    }
+
+    function tiltLoop() {
+        shineNow += (shineTarget - shineNow) * 0.15;   // glotninimas
+        document.querySelector('.voucher-status').style.setProperty('--shine', (shineNow * 100).toFixed(1) + '%');
+        tiltRaf = requestAnimationFrame(tiltLoop);
+    }
+
+    function startTilt() {
+        window.addEventListener('deviceorientation', onTilt);
+    }
+
+    function stopTilt() {
+        window.removeEventListener('deviceorientation', onTilt);
+        if (tiltRaf) cancelAnimationFrame(tiltRaf);
+        tiltRaf = null; tiltBase = null; shineNow = shineTarget = 0.5;
+        document.querySelector('.voucher-status').style.setProperty('--shine', '50%');
+    }
+
+    document.getElementById('voucher-done').addEventListener('click', () => {
+        document.getElementById('voucher-overlay').classList.remove('show');
+        stopTilt();
+        if (voucherScreenId) {
+            closeProduct(voucherScreenId, voucherBackTo);
+            const t = document.getElementById(voucherScreenId).querySelector('.redeem-btn-active');
+            if (t && t.resetSlider) t.resetSlider();
+        }
+        voucherScreenId = null;
+    });
+
+    document.getElementById('confirm-cancel').addEventListener('click', () => {
+        if (!pendingTrack) return;
+        const track = pendingTrack;
+        pendingTrack = null;
+        closeConfirm();
+
+        track.resetSlider();
+    });
+
+    document.querySelectorAll('.redeem-btn-active').forEach(initSlider);
+
+    function handleSearch() {
+        const input = document.getElementById('search-input').value.toLowerCase();
+        const clearBtn = document.getElementById('clear-btn');
+        const defaultText = document.getElementById('default-search-text');
+        const kfcResults = document.getElementById('kfc-results');
+        const fashionResults = document.getElementById('fashion-results');
+        const olearysResults = document.getElementById('olearys-results');
+
+        if (input.length > 0) {
+            clearBtn.style.display = 'block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
+
+        defaultText.style.display = 'none';
+        kfcResults.style.display = 'none';
+        fashionResults.style.display = 'none';
+        olearysResults.style.display = 'none';
+
+        if (input.includes('kfc')) {
+            kfcResults.style.display = 'flex';
+        } else if (input.includes('fashion') || input.includes('nuolaida') || input.includes('asortiment')) {
+            fashionResults.style.display = 'flex';
+        } else if (input.includes('olearys') || input.includes('pietus') || input.includes('kava') || input.includes('spurgyt')) {
+            olearysResults.style.display = 'flex';
+        } else if (input.length === 0) {
+            defaultText.style.display = 'block';
+        } else {
+            defaultText.style.display = 'block';
+        }
+    }
+
+    function clearSearchText() {
+        const inputField = document.getElementById('search-input');
+        inputField.value = '';
+        handleSearch();
+        inputField.focus();
+    }
+
+    // ----- Fullscreen -----
+    // Naršyklė leidžia tik po prisilietimo (touchend/click). pointerdown netinka –
+    // jis sunaudodavo bandymą be leidimo, todėl anksčiau neveikė.
+    function isFs() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+
+    function updateFsBtn() {
+        document.getElementById('fs-btn').style.display = isFs() ? 'none' : '';
+    }
+
+    function goFullscreen() {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (!req || isFs()) return Promise.resolve(false);
+        try {
+            return Promise.resolve(req.call(el, { navigationUI: 'hide' })).then(() => true).catch(() => false);
+        } catch (e) { return Promise.resolve(false); }
+    }
+
+    let fsArmed = false;
+    const fsEvents = ['touchend', 'click'];
+
+    function fsHandler() {
+        goFullscreen().then(ok => {
+            if (ok) {
+                fsEvents.forEach(t => document.removeEventListener(t, fsHandler));
+                fsArmed = false;
+            }
+        });
+    }
+
+    function armFullscreen() {
+        if (fsArmed) return;
+        fsArmed = true;
+        fsEvents.forEach(t => document.addEventListener(t, fsHandler));
+    }
+
+    goFullscreen();      // veiks tik jei naršyklė leis be paspaudimo
+    armFullscreen();     // kitaip – pirmas prisilietimas
+    updateFsBtn();
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev =>
+        document.addEventListener(ev, () => {
+            updateFsBtn();
+            if (!isFs()) armFullscreen();
+        })
+    );
+</script>
+
+<script>
+/* ===== Produktai iš akropolis-data.js (kuriamas admin puslapyje) ===== */
+(function () {
+    const D = window.AKROPOLIS_DATA;
+    if (!D || !Array.isArray(D.shops)) return;
+
+    const CAT = { prizes: 'Prizai', discounts: 'Nuolaidos', programs: 'Programos' };
+    const ORDER = ['prizes', 'discounts', 'programs'];
+    // Taškų skiltys sudaromos automatiškai pagal produkto kainą
+    const TIERS = [
+        { title: '0–999 taškai',     test: c => c <= 999 },
+        { title: '1000–1999 taškai', test: c => c >= 1000 && c <= 1999 },
+        { title: '2000–2999 taškai', test: c => c >= 2000 && c <= 2999 },
+        { title: '3000+ taškų',      test: c => c >= 3000 }
+    ];
+
+    const items = [];
+    D.shops.forEach(s => (s.products || []).forEach(p => items.push({ shop: s, p })));
+    if (!items.length) return;
+
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const brandHTML = (s, cls) => s.brand
+        ? `<img class="dyn-brand ${cls}" src="${s.brand}" alt="">`
+        : `<div class="dyn-brandtxt ${cls}">${esc(s.name)}</div>`;
+    const photoHTML = p => p.photo ? `<img class="photo-fill dyn-photo" src="${p.photo}" alt="${esc(p.title)}">` : '';
+    const fmtDate = d => {
+        if (!d) return '';
+        const dt = new Date(d + 'T00:00:00');
+        return isNaN(dt) ? d : dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    };
+    const byId = id => items.find(i => i.p.id === id);
+
+    const DEF = {
+        card:      { bs: 25, ps: 50, px: 0, py: 0, ls: 28, lx: 4,   ly: 4 },
+        search:    { bs: 27, ps: 55, px: 0, py: 0, ls: 26, lx: 4,   ly: 4 },
+        page:      { bs: 31, ps: 40, px: 0, py: 0, ls: 22, lx: 2.5, ly: 19 },
+        voucherBg: { bs: 31, ps: 40, px: 0, py: 0, ls: 22, lx: 2.5, ly: 19 }
+    };
+    const bgSize = (p, c) => ((Object.assign({}, DEF[c], (p.layout && p.layout[c]) || {})).bs) + '% auto';
+    function layInner(shop, p, c) {
+        const L = Object.assign({}, DEF[c], (p.layout && p.layout[c]) || {});
+        const ph = p.photo
+            ? `<img class="lph" src="${p.photo}" alt="${esc(p.title)}" style="left:calc(50% + ${L.px}cqw);top:calc(50% + ${L.py}cqw);width:${L.ps}cqw;height:${L.ps}cqw">`
+            : '';
+        const lg = shop.brand
+            ? `<img class="llogo" src="${shop.brand}" alt="" style="right:${L.lx}cqw;bottom:${L.ly}cqw;width:${L.ls}cqw">`
+            : `<div class="ltxt" style="right:${L.lx}cqw;bottom:${L.ly}cqw;font-size:${(L.ls * 0.3).toFixed(1)}cqw">${esc(shop.name)}</div>`;
+        return ph + lg;
+    }
+
+    /* ---- Rewards ekranas ---- */
+    const sections = [];
+    ORDER.forEach(k => {
+        const list = items.filter(i => i.p.category === k);
+        if (list.length) sections.push({ title: CAT[k], list });
+    });
+    TIERS.forEach(t => {
+        const list = items.filter(i => t.test(Number(i.p.cost) || 0));
+        if (list.length) sections.push({ title: t.title, list });
+    });
+    document.querySelector('#rewards-screen .rewards-content').innerHTML =
+        sections.map(sec => `
+            <div class="rewards-section">
+                <div class="section-header"><h2>${sec.title}</h2><div class="arrows">>></div></div>
+                <div class="horizontal-scroll">
+                    ${sec.list.map(({ shop, p }) => `
+                    <div class="reward-card" onclick="openDyn('${p.id}','rewards-screen')">
+                        <div class="reward-card-img lay akropolis-pattern-bg" style="background-size:${bgSize(p, 'card')}">${layInner(shop, p, 'card')}</div>
+                        <div class="reward-info"><h4>${esc(p.title)}</h4><p>${p.cost} points</p></div>
+                    </div>`).join('')}
+                </div>
+            </div>`).join('');
+
+    /* ---- Paieška ---- */
+    document.querySelectorAll('#olearys-results, #kfc-results, #fashion-results').forEach(e => e.remove());
+    const res = document.createElement('div');
+    res.className = 'results-container';
+    res.id = 'dyn-results';
+    document.querySelector('.search-content').appendChild(res);
+
+    window.handleSearch = function () {
+        const q = document.getElementById('search-input').value.trim().toLowerCase();
+        document.getElementById('clear-btn').style.display = q ? 'block' : 'none';
+        const hits = q ? items.filter(({ shop, p }) =>
+            [p.title, p.description, shop.name, CAT[p.category] || ''].join(' ').toLowerCase().includes(q)) : [];
+        document.getElementById('default-search-text').style.display = hits.length ? 'none' : 'block';
+        res.style.display = hits.length ? 'flex' : 'none';
+        res.innerHTML = hits.length ? '<div class="results-title">Rewards</div>' + hits.map(({ shop, p }) => `
+            <div class="list-item" onclick="openDyn('${p.id}','search-screen')">
+                <div class="list-item-img-box lay akropolis-pattern-bg" style="background-size:${bgSize(p, 'search')}">${layInner(shop, p, 'search')}</div>
+                <div class="list-item-text">${esc(p.title)}</div>
+            </div>`).join('') : '';
+    };
+
+    /* ---- Produkto ekranas (vienas, užpildomas pagal pasirinktą produktą) ---- */
+    const scr = document.createElement('div');
+    scr.id = 'dyn-screen';
+    scr.className = 'screen product-view';
+    scr.innerHTML = `
+        <div class="product-hero dyn-hero lay akropolis-pattern-bg" id="dyn-hero">
+            <div class="close-circle" id="dyn-close"><i class="ico ico-xmark"></i></div>
+        </div>
+        <div class="product-details">
+            <h1 class="product-title" id="dyn-title"></h1>
+            <div class="points-info"><div class="coin-icon">A</div><span class="points-value" id="dyn-cost"></span></div>
+            <div class="expiry-info" id="dyn-exp-row"><i class="ico ico-clock"></i><span id="dyn-exp"></span></div>
+            <p class="product-desc" id="dyn-desc"></p>
+            <p class="product-warning"><span class="exclamation">!</span><span id="dyn-warn"></span></p>
+            <div class="redeem-btn-active" id="dyn-btn" data-cost="0">
+                <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
+                <span class="btn-text">Redeem</span>
+            </div>
+        </div>`;
+    document.getElementById('fashion-screen').after(scr);
+    initSlider(document.getElementById('dyn-btn'));
+
+    let current = null;
+    window.openDyn = function (id, backTo) {
+        const it = byId(id);
+        if (!it) return;
+        const { shop, p } = it;
+
+        const hero = document.getElementById('dyn-hero');
+        hero.querySelectorAll('.lph, .llogo, .ltxt').forEach(e => e.remove());
+        hero.insertAdjacentHTML('beforeend', layInner(shop, p, 'page'));
+        hero.style.backgroundSize = bgSize(p, 'page');
+        current = it;
+        document.getElementById('dyn-close').setAttribute('onclick', `closeProduct('dyn-screen', '${backTo}')`);
+
+        document.getElementById('dyn-title').textContent = p.title;
+        document.getElementById('dyn-cost').textContent = p.cost;
+        const exp = fmtDate(p.expires);
+        document.getElementById('dyn-exp-row').style.display = exp ? '' : 'none';
+        document.getElementById('dyn-exp').textContent = 'Expires ' + exp;
+        const desc = document.getElementById('dyn-desc');
+        desc.textContent = p.description || '';
+        desc.style.display = p.description ? '' : 'none';
+        document.getElementById('dyn-warn').textContent =
+            `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} darbuotojui.`;
+
+        // slider'is grįžta į pradinę būseną
+        const btn = document.getElementById('dyn-btn');
+        btn.dataset.cost = p.cost;
+        btn.resetSlider();
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        scr.classList.add('active');
+        document.getElementById('main-nav').classList.add('hidden');
+        document.getElementById('main-fab').classList.add('hidden');
+        scr.scrollTop = 0;
+    };
+
+    // Kuponas: kuponas ir jo fonas turi atskirus išdėstymus
+    const origShowVoucher = window.showVoucher;
+    window.showVoucher = function (track) {
+        origShowVoucher(track);
+        if (!current || !track.closest('#dyn-screen')) return;
+        const fill = (boxId, ctx) => {
+            const hero = document.querySelector('#' + boxId + ' .product-hero');
+            if (!hero) return;
+            hero.style.backgroundSize = bgSize(current.p, ctx);
+            hero.querySelectorAll('.lph, .llogo, .ltxt').forEach(e => e.remove());
+            hero.insertAdjacentHTML('beforeend', layInner(current.shop, current.p, ctx));
+        };
+        fill('voucher-hero', 'page');   // kuponas = tas pats išdėstymas kaip produkto puslapyje
+        fill('voucher-bg-inner', 'voucherBg');
+    };
+})();
+</script>
+
+</body>
+</html>
