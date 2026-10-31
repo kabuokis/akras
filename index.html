@@ -677,6 +677,25 @@
             content: '';
         }
 
+        /* "Pulkininko kibirėlis": galiojimo eilutė kaip dizainerių makete (didesnis mėlynai pilkas tekstas, tamsi chronometro ikona) */
+        .pk-design .expiry-info {
+            color: #8288a0;
+            font-size: 16px;
+            gap: 12px;
+            align-items: flex-start;
+            line-height: 1.35;
+        }
+
+        .pk-design .expiry-info i {
+            color: #222;
+            font-size: 22px;
+            margin-top: 0;
+        }
+
+        .pk-design .expiry-info i.ico-clock {
+            --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13.5' r='8'/%3E%3Cpath d='M12 9.5v4.5l3 2M9.5 2.5h5M12 2.5v3M19 6l1.5-1.5'/%3E%3C/svg%3E");
+        }
+
         /* =========================================
            MYGTUKŲ STILIAI (ATNAUJINTI)
            ========================================= */
@@ -2126,8 +2145,10 @@
         document.getElementById('dyn-title').textContent = p.title;
         document.getElementById('dyn-cost').textContent = p.cost;
         const exp = fmtDate(p.expires);
+        const pkExp = isPulkininko(p.title);
         document.getElementById('dyn-exp-row').style.display = exp ? '' : 'none';
-        document.getElementById('dyn-exp').textContent = 'Expires ' + exp;
+        document.getElementById('dyn-exp').textContent = 'Expires ' + exp +
+            (pkExp ? ' 9:00 PM | Max 1 per month per customer' : '');
         const desc = document.getElementById('dyn-desc');
         desc.textContent = p.description || '';
         desc.style.display = p.description ? '' : 'none';
