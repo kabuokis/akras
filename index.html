@@ -663,6 +663,20 @@
             font-size: 18px;
         }
 
+        /* "Pulkininko kibirėlis" dizaino variantas: ❗ emoji eilutėje su tekstu (tekstas apsivynioja po emoji) */
+        .pk-design .product-warning {
+            display: block;
+        }
+
+        .pk-design .product-warning .exclamation {
+            font-size: inherit;
+            font-weight: 400;
+        }
+
+        .pk-design .product-warning .exclamation::after {
+            content: '';
+        }
+
         /* =========================================
            MYGTUKŲ STILIAI (ATNAUJINTI)
            ========================================= */
@@ -2005,6 +2019,12 @@
     };
     const byId = id => items.find(i => i.p.id === id);
 
+    // "Pulkininko kibirėlis" (su ė ar be) – produktas, kurio aprašymas/įspėjimas turi atitikti dizainerių maketą 1:1
+    const isPulkininko = title => String(title || '')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .includes('pulkininko kibirel');
+
     const DEF = {
         card:      { bs: 25, ps: 50, px: 0, py: 0, ls: 28, lx: 4,   ly: 4 },
         search:    { bs: 27, ps: 55, px: 0, py: 0, ls: 26, lx: 4,   ly: 4 },
@@ -2080,11 +2100,12 @@
             <div class="points-info"><div class="coin-icon">A</div><span class="points-value" id="dyn-cost"></span></div>
             <div class="expiry-info" id="dyn-exp-row"><i class="ico ico-clock"></i><span id="dyn-exp"></span></div>
             <p class="product-desc" id="dyn-desc"></p>
-            <p class="product-warning"><span class="exclamation">!</span><span id="dyn-warn"></span></p>
+            <p class="product-warning"><span class="exclamation" id="dyn-excl">!</span> <span id="dyn-warn"></span></p>
             <div class="redeem-btn-active" id="dyn-btn" data-cost="0">
                 <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
                 <span class="btn-text">Redeem</span>
             </div>
+            <p class="fz-disclaimer" id="dyn-disclaimer" style="display:none"></p>
         </div>`;
     document.getElementById('fashion-screen').after(scr);
     initSlider(document.getElementById('dyn-btn'));
@@ -2111,7 +2132,22 @@
         desc.textContent = p.description || '';
         desc.style.display = p.description ? '' : 'none';
         document.getElementById('dyn-warn').textContent =
-            `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} darbuotojui.`;
+            `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} restorano darbuotojui.`;
+
+        // Dizainerių maketas tik "Pulkininko kibirėlis": ❗ emoji eilutėje + raudonas pasvirasis tekstas po slideriu
+        const pk = isPulkininko(p.title);
+        scr.classList.toggle('pk-design', pk);
+        const excl = document.getElementById('dyn-excl');
+        excl.textContent = pk ? '❗' : '!';
+        const warnTxt = document.getElementById('dyn-warn');
+        warnTxt.textContent = pk
+            ? `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} restorano darbuotojui.`
+            : `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} darbuotojui.`;
+        const disc = document.getElementById('dyn-disclaimer');
+        disc.style.display = pk ? '' : 'none';
+        disc.textContent = pk
+            ? `Tu patvirtini, kad nori šio prizo. Jį atsiimsi Vilniuje su ${shop.name} darbuotojo pagalba.`
+            : '';
 
         // slider'is grįžta į pradinę būseną
         const btn = document.getElementById('dyn-btn');
