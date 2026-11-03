@@ -589,7 +589,7 @@
 
         .product-details {
             background-color: white;
-            padding: 24px 20px 80px 20px;
+            padding: 20px 20px 80px 20px;
         }
 
         .product-title {
@@ -597,7 +597,7 @@
             font-weight: 700;
             color: #222;
             margin-bottom: 12px;
-            line-height: 1.3;
+            line-height: 1.15;
         }
 
         .points-info {
@@ -633,7 +633,7 @@
             color: #7a7a7a;
             font-size: 14px;
             margin-bottom: 24px;
-            line-height: 1.4;
+            line-height: 1.2;
         }
 
         .expiry-info i {
@@ -645,7 +645,7 @@
             font-size: 16px;
             color: #333;
             margin-bottom: 24px;
-            line-height: 1.4;
+            line-height: 1.17;
         }
 
         .product-warning {
@@ -846,7 +846,7 @@
             color: #e51b24;
             font-size: 15px;
             font-style: italic;
-            line-height: 1.4;
+            line-height: 1.17;
         }
 
         /* =========================================
@@ -1230,6 +1230,9 @@
         .dyn-brandtxt.xs{right:5px;bottom:5px;font-size:9px;}
         .list-item-img-box.akropolis-pattern-bg{background-size:30px 60px;}
         .list-item-img-box .dyn-photo{padding:16%;}
+        /* Produkto puslapis: kvadratinis herojus + tarpai kaip originalioje programėlėje */
+        #dyn-screen > .dyn-hero{height:auto;aspect-ratio:1/1;}
+        #dyn-screen.no-warn .redeem-btn-active{margin-top:38px;}
 </style>
 </head>
 <body>
@@ -2081,7 +2084,7 @@
             <div class="points-info"><div class="coin-icon">A</div><span class="points-value" id="dyn-cost"></span></div>
             <div class="expiry-info" id="dyn-exp-row"><i class="ico ico-clock"></i><span id="dyn-exp"></span></div>
             <p class="product-desc" id="dyn-desc"></p>
-            <p class="product-warning"><span class="exclamation">!</span><span id="dyn-warn"></span></p>
+            <p class="product-warning" id="dyn-warn-row"><span class="exclamation">!</span><span id="dyn-warn"></span></p>
             <div class="redeem-btn-active" id="dyn-btn" data-cost="0">
                 <div class="btn-circle-red"><i class="ico ico-arrow-right"></i></div>
                 <span class="btn-text">Redeem</span>
@@ -2107,8 +2110,12 @@
         document.getElementById('dyn-title').textContent = p.title;
         document.getElementById('dyn-cost').textContent = p.cost;
         const exp = fmtDate(p.expires);
-        document.getElementById('dyn-exp-row').style.display = exp ? '' : 'none';
-        document.getElementById('dyn-exp').textContent = 'Expires ' + exp;
+        const expNote = (p.expiresNote || '').trim();
+        const expParts = [];
+        if (exp) expParts.push('Expires ' + exp);
+        if (expNote) expParts.push(expNote);
+        document.getElementById('dyn-exp-row').style.display = expParts.length ? '' : 'none';
+        document.getElementById('dyn-exp').textContent = expParts.join(' | ');
         const desc = document.getElementById('dyn-desc');
         desc.textContent = p.description || '';
         desc.style.display = p.description ? '' : 'none';
@@ -2116,6 +2123,10 @@
         // Įspėjimas virš Redeem: iš admin parduotuvės lauko, kitaip numatytasis tekstas
         document.getElementById('dyn-warn').textContent = shop.warn ||
             `Prizų atsiėmimo mygtuką spausk matant Vilniaus AKROPOLIO ${shop.name} darbuotojui.`;
+
+        // Šiam produktui įspėjimą galima paslėpti (admin: „Paslėpti atsiėmimo įspėjimą“)
+        document.getElementById('dyn-warn-row').style.display = p.hideWarn ? 'none' : '';
+        scr.classList.toggle('no-warn', !!p.hideWarn);
 
         // Raudonas pasviręs tekstas po Redeem juosta (jei admin užpildė)
         const note = document.getElementById('dyn-note');
